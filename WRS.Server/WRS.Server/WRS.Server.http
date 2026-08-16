@@ -1,5 +1,12 @@
 
+### Hook Test Request
+
 GET {{base_url}}/hook/testrequest/
+Accept: application/json
+
+### Get requests
+
+GET {{base_url}}/requests/
 Accept: application/json
 
 ###

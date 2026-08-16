@@ -5,4 +5,6 @@ namespace WRS.Domain.Infrastructure;
 public interface IRequestRepository
 {
     public Task PersistRequestAsync(Request request, CancellationToken cancellationToken);
+
+    public Task<IReadOnlyList<PersistedRequest>> GetPersistedRequestsAsync(CancellationToken cancellationToken);
 }

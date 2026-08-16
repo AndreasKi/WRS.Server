@@ -1,17 +1,23 @@
 using System.Text.Json;
+using JetBrains.Annotations;
+using StackExchange.Redis;
 using WRS.Domain.Infrastructure;
 using WRS.Domain.Types;
 
 namespace WRS.Infrastructure.Valkey;
 
+[UsedImplicitly]
 public class RequestRepository : IRequestRepository
 {
     private const string RequestKeyPrefix = "requests";
-    
+    private const string RequestIndexKey = "requests:index";
+
+    private IConnectionMultiplexer ConnectionMultiplexer { get; }
     private ValkeyTransactionScope TransactionScope { get; }
 
-    public RequestRepository(ValkeyTransactionScope transactionScope)
+    public RequestRepository(IConnectionMultiplexer connectionMultiplexer, ValkeyTransactionScope transactionScope)
     {
+        ConnectionMultiplexer = connectionMultiplexer;
         TransactionScope = transactionScope;
     }
 
@@ -20,30 +26,55 @@ public class RequestRepository : IRequestRepository
         cancellationToken.ThrowIfCancellationRequested();
 
         var requestId = Guid.NewGuid().ToString("N");
-        var requestKey = $"{RequestKeyPrefix}:{requestId}";
-        var requestIndexKey = $"{RequestKeyPrefix}:index";
-        var payload = JsonSerializer.Serialize(new StoredRequest(
-            requestId,
-            DateTimeOffset.UtcNow,
-            request.Method,
-            request.Path,
-            request.RoutePath,
-            request.Query,
-            request.Body));
+        var payload = JsonSerializer.Serialize(new PersistedRequest
+        {
+            Id = requestId,
+            CreatedAtUtc = DateTimeOffset.UtcNow,
+            Method = request.Method,
+            Path = request.Path,
+            RoutePath = request.RoutePath,
+            Query = request.Query,
+            Body = request.Body
+        });
 
         TransactionScope.Enqueue(
-            TransactionScope.Transaction.StringSetAsync(requestKey, payload),
-            TransactionScope.Transaction.ListRightPushAsync(requestIndexKey, requestId));
+            TransactionScope.Transaction.StringSetAsync(GetRequestKey(requestId), payload),
+            TransactionScope.Transaction.ListRightPushAsync(RequestIndexKey, requestId));
 
         return Task.CompletedTask;
     }
 
-    private sealed record StoredRequest(
-        string Id,
-        DateTimeOffset CreatedAtUtc,
-        string Method,
-        string Path,
-        string? RoutePath,
-        IReadOnlyDictionary<string, string> Query,
-        string Body);
+    public async Task<IReadOnlyList<PersistedRequest>> GetPersistedRequestsAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var database = ConnectionMultiplexer.GetDatabase();
+        var requestIds = await database.ListRangeAsync(RequestIndexKey);
+        if (requestIds.Length == 0)
+        {
+            return Array.Empty<PersistedRequest>();
+        }
+
+        var requestKeys = requestIds
+            .Select(requestId => (RedisKey)GetRequestKey(requestId.ToString()))
+            .ToArray();
+        var payloads = await database.StringGetAsync(requestKeys);
+        var persistedRequests = new PersistedRequest[payloads.Length];
+
+        for (var index = 0; index < payloads.Length; index++)
+        {
+            var payload = payloads[index];
+            if (payload.IsNullOrEmpty)
+            {
+                throw new InvalidOperationException($"Persisted request '{requestIds[index]}' could not be found.");
+            }
+
+            persistedRequests[index] = JsonSerializer.Deserialize<PersistedRequest>(payload.ToString())
+                ?? throw new InvalidOperationException($"Persisted request '{requestIds[index]}' could not be deserialized.");
+        }
+
+        return persistedRequests;
+    }
+
+    private static string GetRequestKey(string requestId) => $"{RequestKeyPrefix}:{requestId}";
 }

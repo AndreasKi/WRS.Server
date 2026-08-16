@@ -16,4 +16,9 @@ public class RequestService : IRequestService
     {
         return _requestRepository.PersistRequestAsync(request, cancellationToken);
     }
+
+    public Task<IReadOnlyList<PersistedRequest>> GetPersistedRequestsAsync(CancellationToken cancellationToken)
+    {
+        return _requestRepository.GetPersistedRequestsAsync(cancellationToken);
+    }
 }
