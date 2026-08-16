@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRS.Server", "WRS.Server\WRS.Server.csproj", "{70F022A0-62AF-4563-9467-FBD3190384A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRS.Infrastructure", "WRS.Infrastructure\WRS.Infrastructure.csproj", "{8681A7C6-22E3-4392-B748-63A6A68E27C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRS.Domain", "WRS.Domain\WRS.Domain.csproj", "{5925AC78-DA0F-4A21-8B36-CEFA4F495596}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70F022A0-62AF-4563-9467-FBD3190384A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70F022A0-62AF-4563-9467-FBD3190384A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70F022A0-62AF-4563-9467-FBD3190384A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70F022A0-62AF-4563-9467-FBD3190384A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8681A7C6-22E3-4392-B748-63A6A68E27C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8681A7C6-22E3-4392-B748-63A6A68E27C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8681A7C6-22E3-4392-B748-63A6A68E27C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8681A7C6-22E3-4392-B748-63A6A68E27C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5925AC78-DA0F-4A21-8B36-CEFA4F495596}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5925AC78-DA0F-4A21-8B36-CEFA4F495596}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5925AC78-DA0F-4A21-8B36-CEFA4F495596}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5925AC78-DA0F-4A21-8B36-CEFA4F495596}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
