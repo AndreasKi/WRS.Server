@@ -14,5 +14,21 @@ services:
       timeout: 5s
       retries: 5
 
+  app:
+    build:
+      context: ./WRS.Server
+      dockerfile: WRS.Server/Dockerfile
+    container_name: wrs-server
+    restart: unless-stopped
+    depends_on:
+      valkey:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      Valkey__Configuration: valkey:6379
+    ports:
+      - "5145:8080"
+
 volumes:
   valkey-data:
