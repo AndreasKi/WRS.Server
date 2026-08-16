@@ -52,7 +52,7 @@ public class RequestRepository : IRequestRepository
         var requestIds = await database.ListRangeAsync(RequestIndexKey);
         if (requestIds.Length == 0)
         {
-            return Array.Empty<PersistedRequest>();
+            return [];
         }
 
         var requestKeys = requestIds
