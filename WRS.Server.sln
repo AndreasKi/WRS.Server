@@ -1,10 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRS.Server", "WRS.Server\WRS.Server.csproj", "{70F022A0-62AF-4563-9467-FBD3190384A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRS.Server", "WRS.Server\WRS.Server\WRS.Server.csproj", "{70F022A0-62AF-4563-9467-FBD3190384A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRS.Infrastructure", "WRS.Infrastructure\WRS.Infrastructure.csproj", "{8681A7C6-22E3-4392-B748-63A6A68E27C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRS.Infrastructure", "WRS.Server\WRS.Infrastructure\WRS.Infrastructure.csproj", "{8681A7C6-22E3-4392-B748-63A6A68E27C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRS.Domain", "WRS.Domain\WRS.Domain.csproj", "{5925AC78-DA0F-4A21-8B36-CEFA4F495596}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRS.Domain", "WRS.Server\WRS.Domain\WRS.Domain.csproj", "{5925AC78-DA0F-4A21-8B36-CEFA4F495596}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{5E1B64D4-0FA8-4BA0-90A6-0898DCC0B653}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		README.md = README.md
+		.gitignore = .gitignore
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -17,4 +17,9 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\WRS.Domain\WRS.Domain.csproj" />
+      <ProjectReference Include="..\WRS.Infrastructure\WRS.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>
