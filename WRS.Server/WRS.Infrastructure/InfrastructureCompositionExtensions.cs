@@ -14,15 +14,12 @@ public static class InfrastructureCompositionExtensions
         {
             var valkeyOptions = new ValkeyOptions
             {
-                Configuration = configuration.GetValue<string>($"{ValkeyOptions.SectionName}:Configuration")
-                    ?? throw new InvalidOperationException("Valkey configuration is missing."),
-                RequestKeyPrefix = configuration.GetValue<string>($"{ValkeyOptions.SectionName}:RequestKeyPrefix") ?? "requests"
+                Configuration = configuration.GetValue<string>($"{ValkeyOptions.SectionName}:Configuration") ?? throw new InvalidOperationException("Valkey configuration is missing.")
             };
 
             services.AddSingleton(valkeyOptions);
             services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(valkeyOptions.Configuration));
-            services.AddScoped<ITransaction>(serviceProvider =>
-                serviceProvider.GetRequiredService<IConnectionMultiplexer>().GetDatabase().CreateTransaction());
+            services.AddScoped<ValkeyTransactionScope>();
             services.AddScoped<IRequestRepository, RequestRepository>();
 
             return services;

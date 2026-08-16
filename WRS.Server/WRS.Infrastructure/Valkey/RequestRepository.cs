@@ -1,5 +1,4 @@
 using System.Text.Json;
-using StackExchange.Redis;
 using WRS.Domain.Infrastructure;
 using WRS.Domain.Types;
 
@@ -7,22 +6,22 @@ namespace WRS.Infrastructure.Valkey;
 
 public class RequestRepository : IRequestRepository
 {
-    private ITransaction Transaction { get; }
-    private ValkeyOptions Options { get; }
+    private const string RequestKeyPrefix = "requests";
+    
+    private ValkeyTransactionScope TransactionScope { get; }
 
-    public RequestRepository(ITransaction transaction, ValkeyOptions options)
+    public RequestRepository(ValkeyTransactionScope transactionScope)
     {
-        Transaction = transaction;
-        Options = options;
+        TransactionScope = transactionScope;
     }
 
-    public async Task PersistRequestAsync(Request request, CancellationToken cancellationToken)
+    public Task PersistRequestAsync(Request request, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var requestId = Guid.NewGuid().ToString("N");
-        var requestKey = $"{Options.RequestKeyPrefix}:{requestId}";
-        var requestIndexKey = $"{Options.RequestKeyPrefix}:index";
+        var requestKey = $"{RequestKeyPrefix}:{requestId}";
+        var requestIndexKey = $"{RequestKeyPrefix}:index";
         var payload = JsonSerializer.Serialize(new StoredRequest(
             requestId,
             DateTimeOffset.UtcNow,
@@ -32,16 +31,11 @@ public class RequestRepository : IRequestRepository
             request.Query,
             request.Body));
 
-        var storeRequestTask = Transaction.StringSetAsync(requestKey, payload);
-        var appendToIndexTask = Transaction.ListRightPushAsync(requestIndexKey, requestId);
+        TransactionScope.Enqueue(
+            TransactionScope.Transaction.StringSetAsync(requestKey, payload),
+            TransactionScope.Transaction.ListRightPushAsync(requestIndexKey, requestId));
 
-        var committed = await Transaction.ExecuteAsync();
-        if (!committed)
-        {
-            throw new InvalidOperationException("Valkey transaction was not committed.");
-        }
-
-        await Task.WhenAll(storeRequestTask, appendToIndexTask);
+        return Task.CompletedTask;
     }
 
     private sealed record StoredRequest(

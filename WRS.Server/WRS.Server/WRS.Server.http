@@ -1,6 +1,5 @@
-@WRS.Server_HostAddress = http://localhost:5145
 
-GET {{WRS.Server_HostAddress}}/weatherforecast/
+GET {{base_url}}/hook/testrequest/
 Accept: application/json
 
 ###
