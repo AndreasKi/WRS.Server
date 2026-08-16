@@ -21,11 +21,12 @@ public class RequestRepository : IRequestRepository
         TransactionScope = transactionScope;
     }
 
-    public Task PersistRequestAsync(Request request, CancellationToken cancellationToken)
+    public Task<Guid> PersistRequestAsync(Request request, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var requestId = Guid.NewGuid().ToString("N");
+        var id = Guid.NewGuid();
+        var requestId = id.ToString("N");
         var payload = JsonSerializer.Serialize(new PersistedRequest
         {
             Id = requestId,
@@ -41,7 +42,7 @@ public class RequestRepository : IRequestRepository
             TransactionScope.Transaction.StringSetAsync(GetRequestKey(requestId), payload),
             TransactionScope.Transaction.ListRightPushAsync(RequestIndexKey, requestId));
 
-        return Task.CompletedTask;
+        return Task.FromResult(id);
     }
 
     public async Task<IReadOnlyList<PersistedRequest>> GetPersistedRequestsAsync(CancellationToken cancellationToken)
