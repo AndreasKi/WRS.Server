@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddOpenApi()
-    .AddInfrastructure()
+    .AddInfrastructure(builder.Configuration)
     .AddDomain();
 
 var app = builder.Build();
